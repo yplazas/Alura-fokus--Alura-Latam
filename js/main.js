@@ -7,7 +7,7 @@ let botonDescansoCorto = document.querySelector(".app__card-button--corto");
 let botonDescansoLargo = document.querySelector(".app__card-button--largo");
 let alternarMusica = document.getElementById("alternar-musica");
 let musicaRelajante = new Audio("./sonidos/luna-rise-part-one.mp3");
-let tiempoTranscurrido = 15;
+let tiempoTranscurrido = 1500;
 let cardTimer = document.querySelector("#timer");
 let botonComenzar = document.getElementById("start-pause");
 let botonComenzarTexto = document.getElementById("start-pause--span");
@@ -22,6 +22,8 @@ musicaRelajante.loop = true;
 
 // funcion para cambiar el contexto de la pagina y sus elementos
 const cambiarContexto = (contexto) => {
+
+    mostrarTiempo();
     // Elimino la clase activo de todos los botones
     botones.forEach((boton) => boton.classList.remove("active"));
 
@@ -49,15 +51,14 @@ const cambiarContexto = (contexto) => {
 // Funcion para iniciar cuenta regresiva
 const cuentaRegresiva = () => {
     if (tiempoTranscurrido <= 0) {
+        cardTimer.innerHTML = "Fin";
         reiniciarCuentaRegresiva();
-        imagenPlayPausa.src = `/img/play_arrow.png`;
-        botonComenzarTexto.innerText = 'Comenzar';
         return;
     }
     if (tiempoTranscurrido <= 6) {
         sonidoTiempoFin.play();
     }
-    cardTimer.innerHTML = `${tiempoTranscurrido}`;
+    mostrarTiempo();
     tiempoTranscurrido -= 1;
 };
 
@@ -65,8 +66,6 @@ const cuentaRegresiva = () => {
 const iniciarPausar = () => {
     if (intervalo) {
         sonidoPausa.play();
-        imagenPlayPausa.src = `/img/play_arrow.png`;
-        botonComenzarTexto.innerText = 'Iniciar';
         reiniciarCuentaRegresiva();
         return;
     }
@@ -78,13 +77,20 @@ const iniciarPausar = () => {
 
 // Funcion para reiniciar la cuenta regresiva
 const reiniciarCuentaRegresiva = () => {
-    if (tiempoTranscurrido == 0) {
-        tiempoTranscurrido = 15;
-        cardTimer.innerHTML = "Fin";
-    }
+    imagenPlayPausa.src = `/img/play_arrow.png`;
+    botonComenzarTexto.innerText = 'Comenzar';
     clearInterval(intervalo);
     intervalo = null;
 };
+
+// función para mostrar el tiempo formateado
+const mostrarTiempo = () => {
+    let tiempo = new Date(tiempoTranscurrido * 1000);
+    let tiempoFormato = tiempo.toLocaleTimeString('es-CO', { minute: '2-digit', second: '2-digit' });
+    cardTimer.innerHTML = `${tiempoFormato}`;
+};
+
+mostrarTiempo();
 
 /* 
 
@@ -95,16 +101,22 @@ html.setAttribute("data-contexto", "descanso-corto");
 
 // Se Agregan eventos de click a los botones
 botonEnfoque.addEventListener("click", () => {
+    reiniciarCuentaRegresiva();
+    tiempoTranscurrido = 1500;
     cambiarContexto("enfoque");
     botonEnfoque.classList.add("active");
 });
 
 botonDescansoCorto.addEventListener("click", () => {
+    reiniciarCuentaRegresiva();
+    tiempoTranscurrido = 300;
     cambiarContexto("descanso-corto");
     botonDescansoCorto.classList.add("active");
 });
 
 botonDescansoLargo.addEventListener("click", () => {
+    reiniciarCuentaRegresiva();
+    tiempoTranscurrido = 900;
     cambiarContexto("descanso-largo");
     botonDescansoLargo.classList.add("active");
 });
